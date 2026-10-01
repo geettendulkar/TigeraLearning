@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1060" width="960" height="1060" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+    </marker>
+    <style>
+      .op   { fill:#EDE7F6; stroke:#5E35B1; }
+      .k8s  { fill:#E3F2FD; stroke:#1E88E5; }
+      .csi  { fill:#E8F5E9; stroke:#43A047; }
+      .aws  { fill:#FFF3E0; stroke:#FB8C00; }
+      .sec  { fill:#FFFDE7; stroke:#F9A825; }
+      .box  { stroke-width:1.5; }
+      .grp  { fill:none; stroke-width:1.5; stroke-dasharray:6 4; }
+      .t    { font-size:15px; font-weight:600; fill:#1a1a1a; text-anchor:middle; }
+      .s    { font-size:12px; fill:#444; text-anchor:middle; }
+      .g    { font-size:13px; font-weight:600; }
+      .ln   { stroke:#444; stroke-width:1.5; fill:none; marker-end:url(#a); }
+      .dl   { stroke:#444; stroke-width:1.5; fill:none; stroke-dasharray:5 4; marker-end:url(#a); }
+      .lb   { font-size:11.5px; fill:#333; paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round; }
+    </style>
+  </defs>
+
+  <rect width="960" height="1060" fill="#ffffff"/>
+
+  <text x="30" y="38" font-size="20" font-weight="700" fill="#1a1a1a">Log storage flow</text>
+  <text x="30" y="58" font-size="12" fill="#555">Calico Enterprise on OpenShift (AWS)</text>
+
+  <!-- Legend -->
+  <g transform="translate(700,22)">
+    <rect x="0" y="0" width="14" height="14" class="op box"/><text x="20" y="12" font-size="12" fill="#333">Operator</text>
+    <rect x="0" y="20" width="14" height="14" class="k8s box"/><text x="20" y="32" font-size="12" fill="#333">Kubernetes object</text>
+    <rect x="120" y="0" width="14" height="14" class="csi box"/><text x="140" y="12" font-size="12" fill="#333">EBS CSI driver</text>
+    <rect x="120" y="20" width="14" height="14" class="aws box"/><text x="140" y="32" font-size="12" fill="#333">AWS</text>
+    <line x1="0" y1="50" x2="30" y2="50" class="ln"/><text x="36" y="54" font-size="12" fill="#333">creates / calls</text>
+    <line x1="120" y1="50" x2="150" y2="50" class="dl"/><text x="156" y="54" font-size="12" fill="#333">used by</text>
+  </g>
+
+  <!-- Operator chain -->
+  <rect x="360" y="80" width="240" height="56" rx="8" class="k8s box"/>
+  <text x="480" y="104" class="t">LogStorage</text><text x="480" y="123" class="s">tigera-secure (set by admin)</text>
+
+  <rect x="360" y="165" width="240" height="46" rx="8" class="op box"/>
+  <text x="480" y="193" class="t">Tigera operator</text>
+
+  <rect x="360" y="240" width="240" height="56" rx="8" class="k8s box"/>
+  <text x="480" y="264" class="t">Elasticsearch resource</text><text x="480" y="283" class="s">a request document</text>
+
+  <rect x="360" y="325" width="240" height="46" rx="8" class="op box"/>
+  <text x="480" y="353" class="t">ECK operator</text>
+
+  <path d="M480,136 V165" class="ln"/><text x="490" y="155" class="lb">read by</text>
+  <path d="M480,211 V240" class="ln"/><text x="490" y="230" class="lb">writes</text>
+  <path d="M480,296 V325" class="ln"/><text x="490" y="315" class="lb">read by</text>
+
+  <!-- ECK builds -->
+  <rect x="330" y="410" width="300" height="56" rx="8" class="k8s box"/>
+  <text x="480" y="434" class="t">StatefulSet</text><text x="480" y="453" class="s">tigera-secure-es-&lt;hash&gt; · 3 replicas</text>
+
+  <rect x="30" y="410" width="230" height="56" rx="8" class="sec box"/>
+  <text x="145" y="434" class="t">Secrets &amp; ConfigMaps</text><text x="145" y="453" class="s">certs, users, config, scripts</text>
+
+  <path d="M480,371 V410" class="ln"/><text x="490" y="395" class="lb">builds</text>
+  <path d="M360,348 H145 V410" class="ln"/><text x="200" y="342" class="lb">builds</text>
+
+  <!-- Pods and PVCs -->
+  <rect x="90" y="515" width="260" height="56" rx="8" class="k8s box"/>
+  <text x="220" y="539" class="t">Elasticsearch pods</text><text x="220" y="558" class="s">-0   -1   -2</text>
+
+  <rect x="520" y="515" width="300" height="56" rx="8" class="k8s box"/>
+  <text x="670" y="539" class="t">PVCs  (Pending → Bound)</text><text x="670" y="558" class="s">elasticsearch-data-…-0 / -1 / -2</text>
+
+  <path d="M420,466 V490 H290 V515" class="ln"/><text x="300" y="485" class="lb">creates</text>
+  <path d="M540,466 V490 H670 V515" class="ln"/><text x="600" y="485" class="lb">creates (one per pod)</text>
+  <path d="M145,466 V515" class="dl"/><text x="40" y="495" class="lb">mounted into</text>
+  <path d="M520,543 H350" class="dl"/><text x="390" y="537" class="lb">used by</text>
+
+  <!-- CSI driver group -->
+  <rect x="40" y="620" width="880" height="215" rx="10" class="grp" stroke="#43A047"/>
+  <text x="905" y="752" class="g" fill="#2E7D32" text-anchor="end">AWS EBS CSI driver</text>
+  <text x="905" y="770" font-size="12" fill="#2E7D32" text-anchor="end">namespace openshift-cluster-csi-drivers</text>
+
+  <rect x="60" y="640" width="560" height="165" rx="8" fill="#F6FBF6" stroke="#43A047" stroke-width="1"/>
+  <text x="372" y="796" font-size="12" font-weight="600" fill="#2E7D32">controller pod</text>
+
+  <rect x="80" y="670" width="160" height="50" rx="8" class="csi box"/><text x="160" y="700" class="t">csi-provisioner</text>
+  <rect x="260" y="670" width="160" height="50" rx="8" class="csi box"/><text x="340" y="700" class="t">csi-driver</text>
+  <rect x="440" y="670" width="160" height="50" rx="8" class="csi box"/><text x="520" y="700" class="t">csi-attacher</text>
+
+  <rect x="80" y="745" width="160" height="46" rx="8" class="sec box"/>
+  <text x="160" y="765" class="t" font-size="13">Secret</text><text x="160" y="782" class="s">ebs-cloud-credentials</text>
+
+  <rect x="650" y="670" width="250" height="50" rx="8" class="csi box"/>
+  <text x="775" y="691" class="t">CSI node pod</text><text x="775" y="709" class="s">one per node · mounts the disk</text>
+
+  <path d="M670,571 V590 H160 V670" class="ln"/><text x="420" y="585" class="lb">watched by</text>
+  <path d="M240,695 H260" class="ln"/>
+  <path d="M240,768 H300 V720" class="dl"/><text x="250" y="760" class="lb">AWS keys</text>
+  <path d="M775,670 V608 H260 V571" class="dl"/><text x="690" y="604" class="lb">mounts disk</text>
+
+  <!-- AWS group -->
+  <rect x="40" y="870" width="880" height="160" rx="10" class="grp" stroke="#FB8C00"/>
+  <text x="56" y="1020" class="g" fill="#E65100">AWS</text>
+
+  <rect x="250" y="905" width="210" height="56" rx="8" class="aws box"/>
+  <text x="355" y="929" class="t">EC2 API</text><text x="355" y="948" class="s">CreateVolume · AttachVolume</text>
+
+  <rect x="520" y="905" width="200" height="56" rx="8" class="aws box"/>
+  <text x="620" y="929" class="t">EBS volume</text><text x="620" y="948" class="s">one zone · one node at a time</text>
+
+  <rect x="770" y="905" width="140" height="56" rx="8" class="k8s box"/>
+  <text x="840" y="929" class="t">PV</text><text x="840" y="948" class="s">record of the disk</text>
+
+  <path d="M340,720 V905" class="ln"/><text x="348" y="858" class="lb">① CreateVolume</text>
+  <path d="M520,720 V884 H425 V905" class="ln"/><text x="528" y="858" class="lb">② AttachVolume</text>
+  <path d="M460,933 H520" class="ln"/><text x="466" y="926" class="lb">creates</text>
+  <path d="M720,933 H770" class="ln"/>
+  <path d="M910,933 H940 V543 H820" class="ln"/><text x="932" y="820" class="lb" text-anchor="end">binds to PVC</text>
+</svg>
